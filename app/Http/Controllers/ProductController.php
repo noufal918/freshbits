@@ -113,4 +113,13 @@ class ProductController extends Controller
 
         return response()->json(['success' => 'Status change successfully.']);
     }
+
+    // Deleted Selected Products
+    public function deleteSelectedProducts(Request $request)
+    {
+        $ids = $request->ids;
+        Product::whereIn('id', $ids)->delete();
+
+        return response()->json(['success' => 'Selected Products has been deleted successfully.']);
+    }
 }

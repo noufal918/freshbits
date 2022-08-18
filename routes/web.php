@@ -26,3 +26,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // Products
 Route::resource('products', ProductController::class);
 Route::get('product-status',[ProductController::class,'changeStatus'])->name('product.changeStatus');
+Route::delete('selected-products',[ProductController::class,'deleteSelectedProducts'])->name('products.deleteSelected');

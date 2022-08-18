@@ -31,6 +31,7 @@
                             data-target="#addProduct">
                             Add Product
                         </button>
+                        <a href="#" class="btn btn-danger float-right mr-2" id="deleteAllSelected">Delete Selected</a>
                     </div>
 
                     <div class="card-body">
@@ -38,6 +39,9 @@
                         <table id="productTable" class="display" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
+                                    <th>
+                                        <input type="checkbox" id="chkCheckAll" />
+                                    </th>
                                     <th>Id</th>
                                     <th>Name</th>
                                     <th>Price</th>
@@ -49,7 +53,11 @@
 
                             <tbody>
                                 @foreach ($products as $product)
-                                    <tr>
+                                    <tr id="pid{{ $product->id }}">
+                                        <td>
+                                            <input type="checkbox" name="ids" class="checkBoxClass"
+                                                value="{{ $product->id }}" />
+                                        </td>
                                         <td>{{ $product->id }}</td>
                                         <td>{{ $product->name }}</td>
                                         <td>{{ $product->price }}</td>
@@ -92,6 +100,7 @@
 
 @endsection
 @push('custom_css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 @endpush
 @push('custom_js')
@@ -114,6 +123,37 @@
                     }
                 });
             })
-        })
+        });
+
+        $(function(e) {
+            $("#chkCheckAll").click(function() {
+                $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+            })
+
+            $("#deleteAllSelected").click(function(e) {
+                e.preventDefault();
+                var allIds = [];
+
+                $("input:checkbox[name=ids]:checked").each(function() {
+                    allIds.push($(this).val());
+                });
+
+                $.ajax({
+                    url: "{{ route('products.deleteSelected') }}",
+                    type: "DELETE",
+                    data: {
+                        _token: $("input[name=_token]").val(),
+                        ids: allIds
+                    },
+                    success: function(response) {
+                        $.each(allIds, function(key, val) {
+                            $("#pid" + val).remove();
+                        })
+                        location.reload(true);
+                    }
+                })
+            });
+
+        });
     </script>
 @endpush
